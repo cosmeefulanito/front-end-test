@@ -43,3 +43,60 @@ Requisitos:
 + Incluir un archivo README.md con instrucciones sobre cómo se realizaron los desafíos propuestos y cómo se ejecuta el cliente web.
 + Documentar cualquier suposición realizada y describir el enfoque utilizado para la implementación.
 
+
+
+
+## Desarrollo desafío
+
+Para el desarrollo de los mockup se disponibilizan 4 archivos: 
+* SignLayout.tsx: Es un template que se reutiliza para las vistas de Login y Register.
+* Login.tsx 
+* Register.tsx
+* Catalog.tsx 
+
+Para el caso de las rutas se utilizó la libreria `react-router-dom` y se generó una estructura base en el archivo index.js que envuelve las vistas principales y se organizan como sigue:
+- http://localhost:3000/login
+- http://localhost:3000/register
+- http://localhost:3000/catalog
+
+
+
+La refactorización del archivo Broker.ts se dejó en la misma ruta del broker original src/client/http/BrokerRefactor.ts siguiendo el paradigma de funciones puras de la programación funcional.
+
+### Configuración API externa
+
+Para la configuración de esta API es necesario cumplir con los siguientes requisitos:
+* Crear y configurar la función lambda con sus respectivas politicas de permisos.
+* Exponer la función lambda a través de una API gateway
+
+* Elegir un cliente http para hacer las solicitudes, puede ser axios o fetch.
+* Generar un archivo .env y agregar la url de la api
+
+```bash
+
+API_URL = https://api-url.execute-api.region.amazonws.com/your-stage
+
+```
+
+Ejemplo de función para llamar una funcion lambda con api gateway:
+
+```javascript
+
+const callLambdaFunction = (endpoint: string, token: string,  data?: any): IO<Promise<any>> => {
+    
+    const url = `${API_URL}/${endpoint}`;
+    return fetch(url, { headers: createHeaders(token),body: JSON.stringify(data)})
+        .then(handleResponse)
+        .catch(error => { 
+            console.log("error lambda function call", error);
+            return null
+        });
+}
+
+const getBrokers = async() => {
+    const result =  await callcallLambdaFunction("mi-endpoint", {val1: "valor-uno", val2: "valor-dos"});
+    console.log(result);
+}
+```
+
+En el ejemplo se usaron las funciones refactorizadas en el Broker.ts como **createHeaders**  y **handleResponse**
